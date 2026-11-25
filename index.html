@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Life Pattern Radar</title>
+  <style>
+    :root {
+      --bg-base: #070707;
+      --bg-card: #141414;
+      --bg-card-elevated: #1c1c1c;
+      --bg-pill: #222222;
+      --border-subtle: #262626;
+      --border-strong: #3a3a3a;
+      --text-primary: #f5f5f5;
+      --text-secondary: #8e8e93;
+      --text-muted: #555558;
+      --accent-white: #ffffff;
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-pill: 999px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Cairo", sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 440px;
+      min-height: 100vh;
+      background-color: var(--bg-base);
+      padding: 20px 18px 100px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 6px;
+      gap: 8px;
+    }
+
+    .page-title {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 6px;
+      background: var(--bg-card);
+      padding: 5px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-subtle);
+      align-items: center;
+    }
+
+    .lang-btn {
+      height: 30px;
+      padding: 0 11px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-strong);
+      background: #1f1f1f;
+      color: var(--text-primary);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .lang-btn:hover {
+      background: var(--accent-white);
+      color: var(--bg-base);
+    }
+
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .icon-btn.active {
+      background: var(--accent-white);
+      color: var(--bg-base);
+    }
+
+    .filter-pills {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .filter-pills::-webkit-scrollbar { display: none; }
+
+    .pill {
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      font-weight: 500;
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: 0.2s;
+    }
+
+    .pill.active {
+      background: var(--accent-white);
+      color: var(--bg-base);
+      border-color: var(--accent-white);
+      font-weight: 600;
+    }
+
+    .bento-card {
+      background: linear-gradient(165deg, #191919 0%, #111111 100%);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 8px;
+    }
+
+    .card-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .hero-metric {
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      margin: 4px 0 8px;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .hero-metric span {
+      font-size: 16px;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    .hero-insight {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      margin-bottom: 16px;
+    }
+
+    .sub-pills {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .sub-pill {
+      padding: 9px 6px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-subtle);
+      background: rgba(255,255,255,0.02);
+      color: var(--text-secondary);
+      font-size: 12px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .sub-pill.active {
+      background: var(--accent-white);
+      color: var(--bg-base);
+      font-weight: 600;
+      border-color: var(--accent-white);
+    }
+
+    .advice-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .advice-item {
+      background: #181818;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px;
+    }
+
+    .advice-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .advice-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .advice-q-tag {
+      font-size: 10px;
+      color: var(--text-secondary);
+      background: #232323;
+      border: 1px solid var(--border-subtle);
+      padding: 3px 8px;
+      border-radius: var(--radius-pill);
+      white-space: nowrap;
+    }
+
+    .advice-body {
+      font-size: 12.5px;
+      color: #c7c7cc;
+      line-height: 1.6;
+    }
+
+    .advice-action {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed #292929;
+      font-size: 12px;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .bento-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .mini-card {
+      background: linear-gradient(180deg, #181818 0%, #111111 100%);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 135px;
+    }
+
+    .ring-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 2px solid var(--border-strong);
+      border-top-color: var(--accent-white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .mini-value {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .mini-value small {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    .mini-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 12px;
+    }
+
+    .mini-sub {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .matrix-wrapper {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 8px 0 14px;
+    }
+
+    .month-block {
+      flex: 1;
+    }
+
+    .month-name {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .dot-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+
+    .dot {
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: #222222;
+    }
+
+    .dot.lvl-1 { background: #3a3a3a; }
+    .dot.lvl-2 { background: #707070; }
+    .dot.lvl-3 { background: #b5b5b5; }
+    .dot.lvl-4 { background: #ffffff; box-shadow: 0 0 6px rgba(255,255,255,0.4); }
+
+    .bar-row {
+      margin-top: 14px;
+    }
+    .bar-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .bar-split {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 6px;
+      height: 54px;
+    }
+    .bar-box {
+      border-radius: 12px;
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 1px solid var(--border-subtle);
+    }
+    .bar-box.current {
+      background: linear-gradient(90deg, #1b1b1b 0%, #8e8e93 100%);
+      color: #fff;
+    }
+    .bar-box.past {
+      background: #141414;
+      color: var(--text-secondary);
+    }
+    .bar-num {
+      font-size: 16px;
+      font-weight: 700;
+      align-self: flex-end;
+    }
+    .bar-tag {
+      font-size: 10px;
+      opacity: 0.8;
+    }
+
+    .view-section {
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .view-section.active {
+      display: flex;
+    }
+
+    .q-progress {
+      height: 4px;
+      background: #1f1f1f;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .q-progress-fill {
+      height: 100%;
+      background: #fff;
+      width: 10%;
+      transition: width 0.3s ease;
+    }
+
+    .q-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 22px 18px;
+    }
+
+    .q-tag {
+      display: inline-block;
+      font-size: 11px;
+      color: var(--text-secondary);
+      background: #202020;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      margin-bottom: 12px;
+    }
+
+    .q-text {
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 1.55;
+      margin-bottom: 8px;
+    }
+
+    .q-ref {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .scale-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .scale-btn {
+      width: 100%;
+      padding: 13px 16px;
+      border-radius: var(--radius-md);
+      background: #191919;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      cursor: pointer;
+      transition: 0.15s;
+      gap: 10px;
+      text-align: start;
+    }
+
+    .scale-btn:hover, .scale-btn.selected {
+      background: var(--accent-white);
+      color: var(--bg-base);
+      border-color: var(--accent-white);
+      font-weight: 600;
+    }
+
+    .scale-num {
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      border-radius: 50%;
+      border: 1px solid currentColor;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    .bottom-dock {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 36px);
+      max-width: 404px;
+      background: rgba(22, 22, 22, 0.92);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 28px;
+      padding: 10px 18px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .dock-item {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      cursor: pointer;
+      padding: 4px 10px;
+      transition: 0.2s;
+    }
+
+    .dock-item.active {
+      color: var(--accent-white);
+    }
+
+    .diagnosis-badge {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: var(--radius-pill);
+      background: #242424;
+      border: 1px solid #383838;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .small-btn {
+      background: #222;
+      color: #fff;
+      border: 1px solid #333;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .small-btn.light {
+      background: #fff;
+      color: #070707;
+      font-weight: 600;
+    }
+
+    .api-input {
+      width: 100%;
+      background: #1b1b1b;
+      border: 1px solid #2e2e2e;
+      color: #fff;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      margin-top: 8px;
+      outline: none;
+    }
+
+    .status-note {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-shell">
+  <div class="top-bar">
+    <h1 class="page-title" id="headerTitle">Radar</h1>
+    <div class="top-actions">
+      <button class="lang-btn" id="langToggleBtn" onclick="toggleLanguage()" title="Switch Language">EN</button>
+      <button class="icon-btn" onclick="switchTab('radar')" id="btnTopRadar">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+      </button>
+      <button class="icon-btn" onclick="loadDemoData()" id="btnTopDemo">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48 2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48 2.83-2.83"/></svg>
+      </button>
+      <button class="icon-btn active" onclick="switchTab('checkin')" id="btnTopCheckin">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- VIEW 1: RADAR DASHBOARD -->
+  <div id="view-radar" class="view-section active">
+    <div class="filter-pills">
+      <button class="pill active" onclick="setFilter('all', this)" id="pillAll">Readiness</button>
+      <button class="pill" onclick="setFilter('physical', this)" id="pillPhys">Physical</button>
+      <button class="pill" onclick="setFilter('cognitive', this)" id="pillCog">Cognitive</button>
+      <button class="pill" onclick="setFilter('nervous', this)" id="pillNerv">Nervous</button>
+    </div>
+
+    <div class="bento-card">
+      <div class="card-header">
+        <span class="card-label" id="heroLabel">Net Readiness Index</span>
+        <span style="font-size:12px; color:var(--text-secondary);" id="logCountBadge">0 Days Logged</span>
+      </div>
+      <div class="hero-metric" id="heroScore">-- <span>%</span></div>
+      <div id="diagnosisTag" class="diagnosis-badge">بانتظار فحص اليوم</div>
+      <p class="hero-insight" id="heroInsight">
+        ابدأ بأول فحص يومي (10 أسئلة بسيطة في نص دقيقة) عشان الرادار يشوف طاقتك وتعبك ويطلع لك نصائح واضحة.
+      </p>
+      <div class="sub-pills">
+        <div class="sub-pill active" onclick="setRange(1, this)" id="range1">اليوم</div>
+        <div class="sub-pill" onclick="setRange(7, this)" id="range7">7 أيام</div>
+        <div class="sub-pill" onclick="setRange(30, this)" id="range30">30 يوم</div>
+      </div>
+    </div>
+
+    <!-- Actionable Advice Section -->
+    <div class="bento-card">
+      <div class="card-header">
+        <span class="card-label" id="adviceSectionTitle">نصائح واضحة حسب إجاباتك</span>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <span style="font-size:11px; color:var(--text-secondary);" id="adviceSourceBadge">Offline</span>
+          <button class="small-btn" onclick="refreshTodayAdvice(true)" id="btnRefreshAdvice">تحديث AI</button>
+        </div>
+      </div>
+      <div class="advice-list" id="adviceContainer"></div>
+    </div>
+
+    <div class="bento-grid-2">
+      <div class="mini-card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div class="ring-badge" id="physScoreRing">--</div>
+          <span style="font-size:11px; color:var(--text-muted);">Body</span>
+        </div>
+        <div>
+          <div class="mini-title" id="physCardTitle">الطاقة الجسدية</div>
+          <div class="mini-sub" id="physStatus">حالة الجسم والراحة</div>
+        </div>
+      </div>
+
+      <div class="mini-card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div class="mini-value" id="nervLoadVal">-- <small>Load</small></div>
+          <span style="font-size:11px; color:var(--text-muted);">Stress</span>
+        </div>
+        <div>
+          <div class="mini-title" id="nervCardTitle">الضغط العصبي</div>
+          <div class="mini-sub" id="nervStatus">شد الأعصاب والعصبية</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bento-card">
+      <div class="card-header">
+        <span class="card-label" id="matrixTitle">Pattern Matrix</span>
+        <span style="font-size:11px; color:var(--text-secondary);" id="matrixSubtitle">إيقاع الأيام</span>
+      </div>
+      <div class="matrix-wrapper" id="dotMatrixContainer"></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-subtle); padding-top:12px;">
+        <div>
+          <div style="font-size:13px; font-weight:600;" id="patternTitle">النمط المكتشف</div>
+          <div style="font-size:11px; color:var(--text-secondary);" id="patternDesc">سجّل 3 أيام على الأقل عشان يظهر لك أكتر حاجة بتأثر فيك.</div>
+        </div>
+        <div class="ring-badge" id="streakBadge">0d</div>
+      </div>
+    </div>
+
+    <div class="bento-card">
+      <div class="card-header">
+        <span class="card-label" id="drainCardTitle">مقارنة الذهن والحماس</span>
+        <span style="font-size:11px; color:var(--text-secondary);" id="drainSub">اليوم مقابل السابق</span>
+      </div>
+
+      <div class="bar-row">
+        <div class="bar-label"><span id="cogBarLabel">تقل البداية والتشتت</span></div>
+        <div class="bar-split">
+          <div class="bar-box current"><span class="bar-num" id="cogNow">--</span><span class="bar-tag" id="tagNow1">اليوم</span></div>
+          <div class="bar-box past"><span class="bar-num" id="cogPast">--</span><span class="bar-tag" id="tagPast1">السابق</span></div>
+        </div>
+      </div>
+
+      <div class="bar-row">
+        <div class="bar-label"><span id="drvBarLabel">الحماس والاستعداد لبكرة</span></div>
+        <div class="bar-split">
+          <div class="bar-box current"><span class="bar-num" id="drvNow">--</span><span class="bar-tag" id="tagNow2">اليوم</span></div>
+          <div class="bar-box past"><span class="bar-num" id="drvPast">--</span><span class="bar-tag" id="tagPast2">السابق</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW 2: 10 QUESTIONS CHECK-IN -->
+  <div id="view-checkin" class="view-section">
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+      <span style="font-size:12px; color:var(--text-secondary);" id="qCounter">سؤال 1 من 10</span>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <span style="font-size:11px; color:var(--text-muted);" id="qModeBadge">Ready</span>
+        <button class="small-btn" onclick="generateAIQuestions(true)" id="btnGenQ">أسئلة جديدة AI</button>
+        <button onclick="resetCheckin()" style="background:none; border:none; color:var(--text-secondary); font-size:12px; cursor:pointer;" id="btnResetQ">إعادة</button>
+      </div>
+    </div>
+    <div class="q-progress"><div class="q-progress-fill" id="qProgressFill"></div></div>
+
+    <div class="q-card" id="questionBox">
+      <span class="q-tag" id="qDomain">الجسم والراحة</span>
+      <div class="q-text" id="qTitle">...</div>
+      <div class="q-ref" id="qSource">...</div>
+      <div class="scale-options" id="qOptions"></div>
+    </div>
+  </div>
+
+  <!-- VIEW 3: LOGS & API SETTINGS -->
+  <div id="view-logs" class="view-section">
+    <div class="bento-card">
+      <div class="card-header">
+        <span class="card-label" id="apiBoxTitle">Gemini API Key</span>
+        <span style="font-size:11px; color:var(--text-secondary);" id="apiKeyStatus">غير مضبوط</span>
+      </div>
+      <input type="password" id="geminiKeyInput" class="api-input" placeholder="Gemini API Key" />
+      <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
+        <button class="small-btn light" onclick="saveApiKey()" id="btnSaveKey">حفظ المفتاح</button>
+        <button class="small-btn" onclick="clearTodayCache()" id="btnClearCache">مسح كاش اليوم</button>
+      </div>
+      <div class="status-note" id="aiStatusNote">
+        الأسئلة والنصائح بتتحفظ لليوم الواحد عشان متستهلكش طلبات على الفاضي، ولو مفيش نت بيشتغل تلقائيًا من غير مشاكل.
+      </div>
+    </div>
+
+    <div class="bento-card">
+      <div class="card-header">
+        <span class="card-label" id="historyTitle">سجل الأيام</span>
+        <button onclick="clearAllData()" style="background:none; border:none; color:#ff6b6b; font-size:11px; cursor:pointer;" id="btnClearAll">مسح الكل</button>
+      </div>
+      <div id="logsList" style="display:flex; flex-direction:column; gap:10px; margin-top:8px;"></div>
+    </div>
+  </div>
+
+  <div class="bottom-dock">
+    <button class="dock-item active" id="dock-radar" onclick="switchTab('radar')">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      <span id="dockRadarLabel">Radar</span>
+    </button>
+    <button class="dock-item" id="dock-checkin" onclick="switchTab('checkin')">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
+      <span id="dockCheckinLabel">10-Q Scan</span>
+    </button>
+    <button class="dock-item" id="dock-logs" onclick="switchTab('logs')">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>
+      <span id="dockLogsLabel">History</span>
+    </button>
+  </div>
+</div>
+
+<script>
+  const DEFAULT_GEMINI_API_KEY = "";
+  const GEMINI_MODEL = "gemini-2.5-flash";
+
+  const UI_TEXT = {
+    ar: {
+      dir: "rtl",
+      langBtn: "EN",
+      radarTitle: "Radar",
+      checkinTitle: "فحص اليوم",
+      logsTitle: "السجل",
+      pillAll: "الجاهزية",
+      pillPhys: "الجسم",
+      pillCog: "الذهن",
+      pillNerv: "الأعصاب",
+      heroLabelAll: "مؤشر الجاهزية العام",
+      heroLabelPhys: "مؤشر الطاقة الجسدية",
+      heroLabelCog: "مؤشر الصفاء الذهني",
+      heroLabelNerv: "مؤشر الضغط العصبي",
+      daysLogged: (n) => `${n} أيام مسجلة`,
+      emptyHeroTag: "بانتظار فحص اليوم",
+      emptyHeroDesc: "جاوب على 10 أسئلة سهلة وسريعة عشان البرنامج يطلع لك حالتك الحقيقية ونصائح مفيدة ليك.",
+      range1: "اليوم",
+      range7: "7 أيام",
+      range30: "30 يوم",
+      adviceSectionTitle: "نصائح واضحة حسب إجاباتك",
+      btnRefreshAdvice: "تحديث AI",
+      emptyAdvice: "سجّل فحص النهاردة الأول عشان تظهر لك نصائح عملية ومفهومة حسب اللي تعبك.",
+      physCardTitle: "الطاقة الجسدية",
+      physGood: "جسمك مرتاح واستشفاءه كويس",
+      physLow: "جسمك محتاج راحة وأكل ومياه",
+      nervCardTitle: "الضغط العصبي",
+      nervHigh: "في شد أو عصبية واضحة",
+      nervLow: "أعصابك هادية ومستقرة",
+      matrixTitle: "خريطة الأيام",
+      matrixSubtitle: "مستوى الطاقة",
+      patternTitleDefault: "النمط المكتشف",
+      patternDescDefault: "سجّل 3 أيام على الأقل عشان يظهر لك أكتر حاجة بتأثر فيك.",
+      drainCardTitle: "مقارنة الذهن والحماس",
+      drainSub: "اليوم مقابل السابق",
+      cogBarLabel: "تقل البداية والتشتت",
+      drvBarLabel: "الحماس والاستعداد لبكرة",
+      tagNow: "اليوم",
+      tagPast: "السابق",
+      qCounter: (i, total) => `سؤال ${i} من ${total}`,
+      btnGenQ: "أسئلة جديدة AI",
+      btnResetQ: "إعادة",
+      apiBoxTitle: "مفتاح Gemini API",
+      keyReady: "مضبوط",
+      keyMissing: "غير مضبوط",
+      btnSaveKey: "حفظ المفتاح",
+      btnClearCache: "مسح كاش اليوم",
+      aiStatusNote: "الأسئلة والنصائح بتتحفظ لليوم الواحد عشان متستهلكش طلبات على الفاضي، ولو مفيش نت بيشتغل تلقائيًا من غير مشاكل.",
+      historyTitle: "سجل الأيام",
+      btnClearAll: "مسح الكل",
+      emptyLogs: "مفيش سجلات لسه. ابدأ بأول فحص يومي.",
+      dockRadar: "الرادار",
+      dockCheckin: "10 أسئلة",
+      dockLogs: "السجل",
+      cacheSavedNote: "تم مسح كاش النهاردة."
+    },
+    en: {
+      dir: "ltr",
+      langBtn: "AR",
+      radarTitle: "Radar",
+      checkinTitle: "Daily Scan",
+      logsTitle: "History",
+      pillAll: "Readiness",
+      pillPhys: "Body",
+      pillCog: "Mind",
+      pillNerv: "Stress",
+      heroLabelAll: "Overall Readiness",
+      heroLabelPhys: "Physical Energy",
+      heroLabelCog: "Mental Clarity",
+      heroLabelNerv: "Stress Load",
+      daysLogged: (n) => `${n} Days Logged`,
+      emptyHeroTag: "Waiting for Today's Scan",
+      emptyHeroDesc: "Answer 10 simple questions in under a minute to spot real fatigue and get practical tips.",
+      range1: "Today",
+      range7: "7 Days",
+      range30: "30 Days",
+      adviceSectionTitle: "Practical Tips From Your Answers",
+      btnRefreshAdvice: "AI Refresh",
+      emptyAdvice: "Complete today's 10-question scan to get clear, practical tips based on what drained you.",
+      physCardTitle: "Physical Energy",
+      physGood: "Body feels rested and recovered",
+      physLow: "Body needs rest, food, or water",
+      nervCardTitle: "Stress Load",
+      nervHigh: "Noticeable tension or irritability",
+      nervLow: "Calm and steady nervous state",
+      matrixTitle: "Day Rhythm Grid",
+      matrixSubtitle: "Energy pulse",
+      patternTitleDefault: "Detected Pattern",
+      patternDescDefault: "Log at least 3 days to spot what affects your energy most.",
+      drainCardTitle: "Mind & Drive Comparison",
+      drainSub: "Today vs Previous",
+      cogBarLabel: "Start Friction & Distraction",
+      drvBarLabel: "Drive & Readiness for Tomorrow",
+      tagNow: "Today",
+      tagPast: "Past Avg",
+      qCounter: (i, total) => `Question ${i} of ${total}`,
+      btnGenQ: "New AI Questions",
+      btnResetQ: "Reset",
+      apiBoxTitle: "Gemini API Key",
+      keyReady: "Configured",
+      keyMissing: "Not Set",
+      btnSaveKey: "Save Key",
+      btnClearCache: "Clear Today's Cache",
+      aiStatusNote: "Questions and tips are cached per day to avoid extra requests, and fall back smoothly to built-in logic offline.",
+      historyTitle: "Logged Days",
+      btnClearAll: "Clear All",
+      emptyLogs: "No logs yet. Start your first 10-question scan.",
+      dockRadar: "Radar",
+      dockCheckin: "10-Q Scan",
+      dockLogs: "History",
+      cacheSavedNote: "Today's cache cleared."
+    }
+  };
+
+  const FALLBACK_QUESTIONS = {
+    ar: [
+      { id: 1, domain: "الجسم • الصحيان", text: "لما صحيت النهاردة، جسمك احتاج وقت قد إيه عشان يفك وتفوق؟", ref: "Sleep & Morning Energy", labels: ["قمت فايق على طول", "10 دقايق وفقت", "خدت وقت متوسط", "تقل واضح ومجهود عشان أقوم", "تقل شديد جدًا كأني منمتش"] },
+      { id: 2, domain: "الجسم • شد العضلات", text: "لو ركزت في فكك، رقبتك، وأكتافك دلوقتي.. حاسس بشد أو تقل فيهم؟", ref: "Body Tension Check", labels: ["مرتاح ومسترخي خالص", "شد خفيف جدًا", "شد ملحوظ في الرقبة أو الفك", "تيبّس واضح ومستمر", "مشدود جدًا ومضغوط"] },
+      { id: 3, domain: "الجسم • طاقة نص اليوم", text: "طاقتك الجسدية في نص اليوم (قبل أي كافيين أو منبهات) كانت عاملة إزاي؟", ref: "Midday Energy Check", labels: ["عالية وثابتة", "كويسة جدًا", "متوسطة وبتميل للهبوط", "هبوط واضح في نص اليوم", "تعبان ومستنزف بدنيًا"] },
+      { id: 4, domain: "الذهن • بدء المهام", text: "لما جيت تبدأ حاجة محتاجة تفكير النهاردة، حسيت بتقل أو تأجيل قد إيه؟", ref: "Task Start Friction", labels: ["بدأت بسهولة من غير تردد", "تردد بسيط وعدّى", "تقل متوسط", "تأجيل وتقل واضح", "مش قادر أبدأ ومخي واقف"] },
+      { id: 5, domain: "الذهن • التشتت", text: "دماغك النهاردة كانت بتتنطط بين كام فكرة أو حاجة في نفس الوقت؟", ref: "Focus & Distraction", labels: ["مركّز في حاجة واحدة", "تركيز كويس مع تشتت بسيط", "تنقل متوسط بين الحاجات", "تشتت عالي وصعب أثبت", "دوشة وتشتت طول الوقت"] },
+      { id: 6, domain: "الذهن • القرارات", text: "على آخر اليوم، حسيت إن أبسط القرارات اليومية بقت تقيلة على دماغك؟", ref: "Decision Fatigue", labels: ["قراراتي سريعة وواضحة", "طبيعي جدًا", "تردد بسيط", "مخي بيتعب من الاختيار", "مخي قفل ومش قادر أختار"] },
+      { id: 7, domain: "الأعصاب • العصبية", text: "أي حاجة صغيرة أو صوت أو تعطيل النهاردة كان بيستفزك بسرعة؟", ref: "Irritability Check", labels: ["هادي وبالـي طويل", "متزن في أغلب الوقت", "استفزاز خفيف", "بتنرفز بسرعة على حاجات بسيطة", "على آخري ومستفز جدًا"] },
+      { id: 8, domain: "الأعصاب • السيطرة", text: "حسيت النهاردة إنك متحكم في يومك، ولا اليوم هو اللي بيسوقك؟", ref: "Control vs Pressure", labels: ["متحكم في وقتي ومهامي", "إحساس كويس بالسيطرة", "نص ونص", "حاسس إني ملاحق ومضغوط", "مضغوط جدًا ومفيش سيطرة"] },
+      { id: 9, domain: "الطاقة • صافي اليوم", text: "الحاجات اللي عملتها النهاردة شحنت طاقتك ولا سحبتها أكتر؟", ref: "Net Energy Balance", labels: ["شحنتني ورفعت طاقتي", "توازن كويس", "استهلاك عادي", "سحبت أكتر ما شحنت", "سحبت طاقتي كلها"] },
+      { id: 10, domain: "الحماس • بكرة", text: "لما تفكر في اللي وراك بكرة دلوقتي، حاسس بحماس ولا بتقل وقلق؟", ref: "Tomorrow Outlook", labels: ["متحمس وجاهز لبكرة", "مرتاح وهادي", "عادي", "حاسس بتقل بسيط", "تقيل ومش عايز أبدأ بكرة"] }
+    ],
+    en: [
+      { id: 1, domain: "Body • Wake-Up", text: "When you woke up today, how long did it take your body to feel awake?", ref: "Morning Energy Check", labels: ["Awake right away", "Took ~10 mins", "Moderate slow start", "Heavy and sluggish", "Exhausted like I barely slept"] },
+      { id: 2, domain: "Body • Muscle Tension", text: "Check your jaw, neck, and shoulders right now—how tense do they feel?", ref: "Physical Tension Check", labels: ["Completely relaxed", "Very mild tension", "Noticeable neck/jaw tightness", "Clear ongoing stiffness", "Very tight and braced"] },
+      { id: 3, domain: "Body • Midday Fuel", text: "How was your physical energy around midday before any caffeine?", ref: "Midday Energy Check", labels: ["High and steady", "Quite good", "Average, dipping a bit", "Clear midday drop", "Physically drained"] },
+      { id: 4, domain: "Mind • Starting Tasks", text: "How much mental resistance or delay did you feel before starting focused work?", ref: "Task Start Friction", labels: ["Started easily", "Slight hesitation", "Moderate friction", "Noticeable putting off", "Stuck and hard to start"] },
+      { id: 5, domain: "Mind • Distraction", text: "How much did your mind jump between different thoughts or tasks today?", ref: "Focus & Distraction", labels: ["Focused on one thing", "Mostly focused", "Moderate switching", "High distraction", "Constant mental noise"] },
+      { id: 6, domain: "Mind • Decisions", text: "By later in the day, did simple everyday choices feel tiring?", ref: "Decision Fatigue", labels: ["Quick and clear choices", "Normal", "Slight hesitation", "Choices feel tiring", "Mentally overloaded"] },
+      { id: 7, domain: "Stress • Irritability", text: "Did small noises, delays, or minor annoyances irritate you easily today?", ref: "Irritability Check", labels: ["Calm and patient", "Steady most of the day", "Mild annoyance", "Snappy over small things", "On edge all day"] },
+      { id: 8, domain: "Stress • Control", text: "Did you feel in control of your day, or pushed around by too much going on?", ref: "Control vs Pressure", labels: ["In control of my day", "Fairly in control", "Balanced", "Feeling rushed/pressed", "Overwhelmed and pressured"] },
+      { id: 9, domain: "Energy • Net Balance", text: "Overall, did today's activities recharge you or drain your battery more?", ref: "Net Energy Balance", labels: ["Recharged me", "Positive balance", "Fairly even", "Drained more than charged", "Completely drained"] },
+      { id: 10, domain: "Drive • Tomorrow", text: "Thinking about tomorrow right now, do you feel ready or heavy?", ref: "Tomorrow Outlook", labels: ["Ready and motivated", "Calm and okay", "Neutral", "A bit heavy", "Dreading tomorrow"] }
+    ]
+  };
+
+  let currentLang = localStorage.getItem('lpr_lang') || 'ar';
+  let currentTab = 'radar';
+  let activeQuestions = [...FALLBACK_QUESTIONS[currentLang]];
+  let currentQ = 0;
+  let answers = [];
+  let logs = JSON.parse(localStorage.getItem('lpr_logs_v4') || '[]');
+  let selectedRange = 1;
+  let selectedFilter = 'all';
+
+  function getTodayKey() {
+    return new Date().toISOString().split('T')[0];
+  }
+
+  function getApiKey() {
+    return (localStorage.getItem('lpr_gemini_key') || DEFAULT_GEMINI_API_KEY || '').trim();
+  }
+
+  function saveApiKey() {
+    const val = document.getElementById('geminiKeyInput').value.trim();
+    if (val) {
+      localStorage.setItem('lpr_gemini_key', val);
+    } else {
+      localStorage.removeItem('lpr_gemini_key');
+    }
+    updateApiKeyUI();
+  }
+
+  function updateApiKeyUI() {
+    const t = UI_TEXT[currentLang];
+    const key = getApiKey();
+    const input = document.getElementById('geminiKeyInput');
+    if (input) input.value = key;
+    const status = document.getElementById('apiKeyStatus');
+    if (status) status.textContent = key ? t.keyReady : t.keyMissing;
+  }
+
+  function clearTodayCache() {
+    const today = getTodayKey();
+    localStorage.removeItem(`lpr_q_cache_${today}_${currentLang}`);
+    localStorage.removeItem(`lpr_adv_cache_${today}_${currentLang}`);
+    activeQuestions = [...FALLBACK_QUESTIONS[currentLang]];
+    currentQ = 0;
+    answers = [];
+    document.getElementById('aiStatusNote').textContent = UI_TEXT[currentLang].cacheSavedNote;
+    renderQuestion();
+    updateDashboard();
+  }
+
+  function toggleLanguage() {
+    currentLang = currentLang === 'ar' ? 'en' : 'ar';
+    localStorage.setItem('lpr_lang', currentLang);
+    applyLanguageUI();
+    loadOrGenerateTodayQuestions();
+    renderQuestion();
+    updateDashboard();
+    if (currentTab === 'logs') renderLogs();
+  }
+
+  function applyLanguageUI() {
+    const t = UI_TEXT[currentLang];
+    document.documentElement.lang = currentLang;
+    document.documentElement.dir = t.dir;
+
+    document.getElementById('langToggleBtn').textContent = t.langBtn;
+    document.getElementById('pillAll').textContent = t.pillAll;
+    document.getElementById('pillPhys').textContent = t.pillPhys;
+    document.getElementById('pillCog').textContent = t.pillCog;
+    document.getElementById('pillNerv').textContent = t.pillNerv;
+
+    document.getElementById('range1').textContent = t.range1;
+    document.getElementById('range7').textContent = t.range7;
+    document.getElementById('range30').textContent = t.range30;
+
+    document.getElementById('adviceSectionTitle').textContent = t.adviceSectionTitle;
+    document.getElementById('btnRefreshAdvice').textContent = t.btnRefreshAdvice;
+    document.getElementById('physCardTitle').textContent = t.physCardTitle;
+    document.getElementById('nervCardTitle').textContent = t.nervCardTitle;
+
+    document.getElementById('matrixTitle').textContent = t.matrixTitle;
+    document.getElementById('matrixSubtitle').textContent = t.matrixSubtitle;
+    document.getElementById('drainCardTitle').textContent = t.drainCardTitle;
+    document.getElementById('drainSub').textContent = t.drainSub;
+    document.getElementById('cogBarLabel').textContent = t.cogBarLabel;
+    document.getElementById('drvBarLabel').textContent = t.drvBarLabel;
+    document.getElementById('tagNow1').textContent = t.tagNow;
+    document.getElementById('tagNow2').textContent = t.tagNow;
+    document.getElementById('tagPast1').textContent = t.tagPast;
+    document.getElementById('tagPast2').textContent = t.tagPast;
+
+    document.getElementById('btnGenQ').textContent = t.btnGenQ;
+    document.getElementById('btnResetQ').textContent = t.btnResetQ;
+
+    document.getElementById('apiBoxTitle').textContent = t.apiBoxTitle;
+    document.getElementById('btnSaveKey').textContent = t.btnSaveKey;
+    document.getElementById('btnClearCache').textContent = t.btnClearCache;
+    document.getElementById('aiStatusNote').textContent = t.aiStatusNote;
+    document.getElementById('historyTitle').textContent = t.historyTitle;
+    document.getElementById('btnClearAll').textContent = t.btnClearAll;
+
+    document.getElementById('dockRadarLabel').textContent = t.dockRadar;
+    document.getElementById('dockCheckinLabel').textContent = t.dockCheckin;
+    document.getElementById('dockLogsLabel').textContent = t.dockLogs;
+
+    const titles = { radar: t.radarTitle, checkin: t.checkinTitle, logs: t.logsTitle };
+    document.getElementById('headerTitle').textContent = titles[currentTab];
+    updateApiKeyUI();
+  }
+
+  async function callGeminiJSON(prompt) {
+    const apiKey = getApiKey();
+    if (!apiKey) {
+      throw new Error("MISSING_API_KEY");
+    }
+    if (!navigator.onLine) {
+      throw new Error("BROWSER_OFFLINE");
+    }
+
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`;
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          responseMimeType: "application/json",
+          temperature: 0.85
+        }
+      })
+    });
+
+    if (!response.ok) {
+      const errText = await response.text().catch(() => "");
+      throw new Error(`HTTP_${response.status}: ${errText.slice(0, 120)}`);
+    }
+
+    const data = await response.json();
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) throw new Error("EMPTY_RESPONSE");
+    return JSON.parse(text);
+  }
+
+  async function loadOrGenerateTodayQuestions() {
+    const today = getTodayKey();
+    const cacheKey = `lpr_q_cache_${today}_${currentLang}`;
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      activeQuestions = parsed.questions;
+      document.getElementById('qModeBadge').textContent = parsed.source === 'ai' ? "AI" : "Built-in";
+      return;
+    }
+    await generateAIQuestions(false);
+  }
+
+  async function generateAIQuestions(forceNew) {
+    const today = getTodayKey();
+    const cacheKey = `lpr_q_cache_${today}_${currentLang}`;
+    if (!forceNew && localStorage.getItem(cacheKey)) return;
+
+    const recentSummary = logs.slice(-3).map(l => ({
+      date: l.date,
+      physical: l.physicalReadiness,
+      cognitive: l.cognitiveClarity,
+      nervous: l.nervousLoad,
+      drive: l.forwardDrive
+    }));
+
+    const langInstruction = currentLang === 'ar'
+      ? "اكتب بلغة عربية بسيطة، واضحة، وسهلة الفهم جدًا (مصرية خفيفة ومباشرة بدون تعقيد أو مصطلحات صعبة)."
+      : "Write in simple, clear, everyday English that is easy to understand without heavy jargon.";
+
+    const prompt = `
+You create 10 daily check-in questions about physical energy, muscle tension, mental focus/fatigue, stress/irritability, and readiness for tomorrow.
+${langInstruction}
+Rules:
+- Questions 1-3: Body energy, wake-up, and physical/muscle tension.
+- Questions 4-6: Mental start friction, distraction, and decision tiredness.
+- Questions 7-8: Stress/irritability and feeling in control vs pressured.
+- Questions 9-10: Net energy balance and outlook for tomorrow.
+- Every question must have 5 options ordered from 1 (best / lowest strain) to 5 (most tired / highest strain).
+Recent days context: ${JSON.stringify(recentSummary)}.
+
+Return ONLY valid JSON:
+{
+  "questions": [
+    {
+      "id": 1,
+      "domain": "Short topic",
+      "text": "Simple question",
+      "ref": "Short tag",
+      "labels": ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5"]
+    }
+  ]
+}
+`;
+
+    try {
+      document.getElementById('qModeBadge').textContent = "...";
+      const res = await callGeminiJSON(prompt);
+      if (Array.isArray(res.questions) && res.questions.length === 10) {
+        activeQuestions = res.questions;
+        currentQ = 0;
+        answers = [];
+        localStorage.setItem(cacheKey, JSON.stringify({ source: 'ai', questions: activeQuestions }));
+        document.getElementById('qModeBadge').textContent = "AI";
+        renderQuestion();
+        return;
+      }
+      throw new Error("INVALID_FORMAT");
+    } catch (err) {
+      activeQuestions = [...FALLBACK_QUESTIONS[currentLang]];
+      currentQ = 0;
+      answers = [];
+      localStorage.setItem(cacheKey, JSON.stringify({ source: 'offline', questions: activeQuestions }));
+      document.getElementById('qModeBadge').textContent = "Offline";
+      renderQuestion();
+    }
+  }
+
+  function generateFallbackAdvice(entry) {
+    const r = entry.raw || [3,3,3,3,3,3,3,3,3,3];
+    const pool = [];
+    const isAr = currentLang === 'ar';
+
+    if (r[1] >= 4 || r[6] >= 4) {
+      pool.push({
+        priority: r[1] + r[6],
+        qTag: isAr ? "الضغط والعصبية" : "Tension & Stress",
+        title: isAr ? "فك الشد قبل ما يتعبك أكتر" : "Ease tension before it drains you",
+        body: isAr ? "الشد في الجسم أو سرعة النرفزة معناه إن أعصابك مشدودة حتى لو مش حاسس بتعب كامل." : "Body tightness or quick irritation means your stress system is working overtime.",
+        action: isAr ? "اعمل إيه دلوقتي: ريّح فكك وأكتافك، وخد 5 أنفاس هادية وبطيئة، وقلل الكافيين أو الدوشة شوية." : "Do now: Drop your shoulders and jaw, take 5 slow breaths, and cut extra caffeine or noise."
+      });
+    }
+    if (r[0] >= 4 || r[2] >= 4) {
+      pool.push({
+        priority: r[0] + r[2],
+        qTag: isAr ? "الجسم والراحة" : "Body & Fuel",
+        title: isAr ? "متضغطش على جسمك وهو هابط" : "Don't force heavy effort on low fuel",
+        body: isAr ? "تقل الصحيان أو هبوط الطاقة في نص اليوم بيقول إن جسمك محتاج راحة أو أكل ومياه." : "Groggy mornings or midday dips usually point to recovery, food, or hydration needs.",
+        action: isAr ? "اعمل إيه دلوقتي: خفّف المجهود التقيل النهاردة، واشرب مياه، وكل وجبة خفيفة ومغذية." : "Do now: Scale down heavy effort today, drink water, and have a solid meal."
+      });
+    }
+    if (r[3] >= 4 || r[4] >= 4) {
+      pool.push({
+        priority: r[3] + r[4],
+        qTag: isAr ? "التركيز والبداية" : "Focus & Start",
+        title: isAr ? "ابدأ بحاجة واحدة صغيرة وبس" : "Start with just one small step",
+        body: isAr ? "التشتت وكتر الحاجات المفتوحة بيخلوا أي مهمة تبان تقيلة وتأجلها." : "Switching across too many things makes starting feel heavy.",
+        action: isAr ? "اعمل إيه دلوقتي: اقفل الحاجات اللي حواليك واشتغل 15 دقيقة على خطوة واحدة واضحة." : "Do now: Close extra tabs/distractions and do one clear 15-minute step."
+      });
+    }
+    if (r[5] >= 4) {
+      pool.push({
+        priority: r[5] + 2,
+        qTag: isAr ? "كتر الاختيارات" : "Choice Overload",
+        title: isAr ? "أجّل القرارات الكبيرة لبكرة" : "Save big decisions for tomorrow",
+        body: isAr ? "لما دماغك يتعب من كتر الاختيارات، قراراتك بتبقى أبطأ وأقل دقة." : "When your mind gets tired from choices, decisions take more effort.",
+        action: isAr ? "اعمل إيه دلوقتي: اختار حاجات جاهزة ومريحة لباقي اليوم وسيب القرارات المهمة لما دماغك يصفى." : "Do now: Stick to simple, familiar choices today and leave big calls for later."
+      });
+    }
+    if (r[7] >= 4) {
+      pool.push({
+        priority: r[7] + 2,
+        qTag: isAr ? "الضغط والزحمة" : "Feeling Rushed",
+        title: isAr ? "قلّل اللي عليك لحد المعقول" : "Trim today's list to what fits",
+        body: isAr ? "الإحساس إن اليوم بيجري منك بيحصل لما تحط على نفسك حاجات أكتر من طاقتك اليومية." : "Feeling rushed happens when you have more open items than energy.",
+        action: isAr ? "اعمل إيه دلوقتي: اختار أهم حاجتين أو 3 بس لليوم، والباقي يروح لبكرة عادي." : "Do now: Pick your top 2–3 essentials for today and move the rest to tomorrow."
+      });
+    }
+    if (r[8] >= 4 || r[9] >= 4) {
+      pool.push({
+        priority: r[8] + r[9],
+        qTag: isAr ? "صافي اليوم وبكرة" : "Today & Tomorrow",
+        title: isAr ? "اقفل اليوم بهدوء عشان بكرة يبدأ أحسن" : "Wind down early to protect tomorrow",
+        body: isAr ? "لو اليوم سحب طاقتك وحاسس بتقل من بكرة، ده وقت تقفل فيه بدري وتريح دماغك." : "If today drained you and tomorrow feels heavy, winding down early helps reset.",
+        action: isAr ? "اعمل إيه دلوقتي: اكتب أول خطوة لبكرة في سطر واحد وابعد عن الشاشات قبل النوم." : "Do now: Write one small first step for tomorrow and step away from screens early."
+      });
+    }
+    if (pool.length === 0) {
+      pool.push({
+        priority: 5,
+        qTag: isAr ? "يوم متوازن" : "Steady Day",
+        title: isAr ? "استغل إن يومك رايق ومظبوط" : "Use your steady energy on what matters",
+        body: isAr ? "طاقتك وتركيزك وأعصابك في حالة كويسة النهاردة." : "Your body, focus, and stress levels look steady today.",
+        action: isAr ? "اعمل إيه دلوقتي: ابدأ بأهم حاجة وراك قبل ما اليوم يسرق وقتك في تفاصيل صغيرة." : "Do now: Tackle your most important task before small distractions take over."
+      });
+    }
+    pool.sort((a, b) => b.priority - a.priority);
+    return pool.slice(0, 3);
+  }
+
+  async function refreshTodayAdvice(forceNew = false) {
+    if (logs.length === 0) {
+      document.getElementById('adviceContainer').innerHTML =
+        `<div style="font-size:12.5px; color:var(--text-secondary);">${UI_TEXT[currentLang].emptyAdvice}</div>`;
+      return;
+    }
+
+    const latest = logs[logs.length - 1];
+    const today = getTodayKey();
+    const cacheKey = `lpr_adv_cache_${today}_${currentLang}_${latest.timestamp}`;
+
+    if (!forceNew && localStorage.getItem(cacheKey)) {
+      const cached = JSON.parse(localStorage.getItem(cacheKey));
+      renderAdviceList(cached.items, cached.source);
+      return;
+    }
+
+    const langInstruction = currentLang === 'ar'
+      ? "اكتب بلغة عربية بسيطة، واضحة، وسهلة جدًا (مصرية خفيفة ومباشرة بدون كلام معقد أو مصطلحات أكاديمية تقيلة)."
+      : "Write in simple, clear, everyday English that is easy to read and immediately useful.";
+
+    const prompt = `
+Give 3 short, clear, practical tips based on the user's daily answers and recent days.
+${langInstruction}
+Today's data: ${JSON.stringify({
+  rawAnswers: latest.raw,
+  physicalReadiness: latest.physicalReadiness,
+  cognitiveClarity: latest.cognitiveClarity,
+  nervousLoad: latest.nervousLoad,
+  forwardDrive: latest.forwardDrive,
+  totalReadiness: latest.totalReadiness
+})}.
+Recent days: ${JSON.stringify(logs.slice(-5).map(l => ({
+  date: l.date,
+  totalReadiness: l.totalReadiness,
+  nervousLoad: l.nervousLoad,
+  cognitiveClarity: l.cognitiveClarity
+})))}.
+
+Return ONLY valid JSON:
+{
+  "items": [
+    {
+      "qTag": "Short topic tag",
+      "title": "Short clear tip title",
+      "body": "Simple explanation of what the answers show",
+      "action": "Clear action step to take now"
+    }
+  ]
+}
+`;
+
+    try {
+      document.getElementById('adviceSourceBadge').textContent = "...";
+      const res = await callGeminiJSON(prompt);
+      if (Array.isArray(res.items) && res.items.length > 0) {
+        const sliced = res.items.slice(0, 3);
+        localStorage.setItem(cacheKey, JSON.stringify({ source: 'AI', items: sliced }));
+        renderAdviceList(sliced, 'AI');
+        return;
+      }
+      throw new Error("INVALID_ADVICE");
+    } catch (err) {
+      const fallbackItems = generateFallbackAdvice(latest);
+      localStorage.setItem(cacheKey, JSON.stringify({ source: 'Offline', items: fallbackItems }));
+      renderAdviceList(fallbackItems, 'Offline');
+    }
+  }
+
+  function renderAdviceList(items, sourceLabel) {
+    document.getElementById('adviceSourceBadge').textContent = sourceLabel;
+    const container = document.getElementById('adviceContainer');
+    container.innerHTML = items.map(item => `
+      <div class="advice-item">
+        <div class="advice-top">
+          <div class="advice-title">${item.title}</div>
+          <span class="advice-q-tag">${item.qTag}</span>
+        </div>
+        <div class="advice-body">${item.body}</div>
+        <div class="advice-action">${item.action}</div>
+      </div>
+    `).join('');
+  }
+
+  function switchTab(tab) {
+    currentTab = tab;
+    const t = UI_TEXT[currentLang];
+    document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.dock-item').forEach(el => el.classList.remove('active'));
+    document.getElementById(`view-${tab}`).classList.add('active');
+    document.getElementById(`dock-${tab}`).classList.add('active');
+
+    const titles = { radar: t.radarTitle, checkin: t.checkinTitle, logs: t.logsTitle };
+    document.getElementById('headerTitle').textContent = titles[tab];
+
+    if (tab === 'checkin') renderQuestion();
+    if (tab === 'radar') updateDashboard();
+    if (tab === 'logs') {
+      updateApiKeyUI();
+      renderLogs();
+    }
+  }
+
+  function renderQuestion() {
+    const t = UI_TEXT[currentLang];
+    const list = activeQuestions.length === 10 ? activeQuestions : FALLBACK_QUESTIONS[currentLang];
+    const q = list[currentQ] || FALLBACK_QUESTIONS[currentLang][currentQ];
+    document.getElementById('qCounter').textContent = t.qCounter(currentQ + 1, list.length);
+    document.getElementById('qProgressFill').style.width = `${((currentQ + 1) / list.length) * 100}%`;
+    document.getElementById('qDomain').textContent = q.domain;
+    document.getElementById('qTitle').textContent = q.text;
+    document.getElementById('qSource').textContent = q.ref;
+
+    const opts = document.getElementById('qOptions');
+    opts.innerHTML = '';
+    q.labels.forEach((label, idx) => {
+      const score = idx + 1;
+      const btn = document.createElement('button');
+      btn.className = 'scale-btn';
+      btn.innerHTML = `<span>${label}</span><span class="scale-num">${score}</span>`;
+      btn.onclick = () => selectAnswer(score);
+      opts.appendChild(btn);
+    });
+  }
+
+  function selectAnswer(score) {
+    answers.push(score);
+    if (currentQ < 9) {
+      currentQ++;
+      renderQuestion();
+    } else {
+      saveDailyScan(answers);
+      currentQ = 0;
+      answers = [];
+      switchTab('radar');
+    }
+  }
+
+  function resetCheckin() {
+    currentQ = 0;
+    answers = [];
+    renderQuestion();
+  }
+
+  function saveDailyScan(ans) {
+    const physStrain = (ans[0] + ans[1] + ans[2]) / 3;
+    const cogStrain = (ans[3] + ans[4] + ans[5]) / 3;
+    const nervStrain = (ans[6] + ans[7]) / 2;
+    const driveStrain = (ans[8] + ans[9]) / 2;
+
+    const physicalReadiness = Math.round(((5 - physStrain) / 4) * 100);
+    const cognitiveClarity = Math.round(((5 - cogStrain) / 4) * 100);
+    const nervousLoad = Math.round(((nervStrain - 1) / 4) * 100);
+    const forwardDrive = Math.round(((5 - driveStrain) / 4) * 100);
+    const totalReadiness = Math.round(
+      (physicalReadiness * 0.3) +
+      (cognitiveClarity * 0.3) +
+      ((100 - nervousLoad) * 0.2) +
+      (forwardDrive * 0.2)
+    );
+
+    const entry = {
+      date: getTodayKey(),
+      timestamp: Date.now(),
+      raw: ans,
+      physicalReadiness,
+      cognitiveClarity,
+      nervousLoad,
+      forwardDrive,
+      totalReadiness
+    };
+
+    logs = logs.filter(l => l.date !== entry.date);
+    logs.push(entry);
+    logs.sort((a, b) => a.timestamp - b.timestamp);
+    localStorage.setItem('lpr_logs_v4', JSON.stringify(logs));
+  }
+
+  function diagnoseState(entry) {
+    const isAr = currentLang === 'ar';
+    if (entry.nervousLoad >= 65 && entry.physicalReadiness >= 55) {
+      return {
+        tag: isAr ? "ضغط عصبي مكتوم" : "Hidden Stress",
+        desc: isAr ? "جسمك قادر يمشي، بس أعصابك مشدودة. ريّح نفسك شوية قبل ما يجيلك هبوط مفاجئ." : "Your body is coping, but stress is building up. Slow down before a crash."
+      };
+    }
+    if (entry.cognitiveClarity <= 45 && entry.physicalReadiness >= 55) {
+      return {
+        tag: isAr ? "تعب ذهني وتشتت" : "Mental Fatigue",
+        desc: isAr ? "التعب في دماغك أكتر من جسمك. قلل التشتت والقرارات لباقي اليوم." : "Your mind is more tired than your body. Cut distractions and extra choices."
+      };
+    }
+    if (entry.physicalReadiness <= 45) {
+      return {
+        tag: isAr ? "إرهاق جسدي" : "Body Fatigue",
+        desc: isAr ? "جسمك محتاج راحة واستشفاء وأكل كويس قبل أي مجهود تقيل." : "Your body needs rest, recovery, and good fuel before heavy effort."
+      };
+    }
+    if (entry.totalReadiness >= 75) {
+      return {
+        tag: isAr ? "جاهزية عالية" : "High Readiness",
+        desc: isAr ? "طاقتك وتركيزك كويسين النهاردة، مناسب جدًا لحاجة مهمة." : "Energy and focus look strong today—good time for important work."
+      };
+    }
+    return {
+      tag: isAr ? "حالة متوازنة" : "Steady State",
+      desc: isAr ? "طاقتك مستقرة، حافظ على إيقاعك ومتضغطش على نفسك في آخر اليوم." : "Steady baseline today—keep a smooth pace and avoid burning out late."
+    };
+  }
+
+  function setRange(days, el) {
+    selectedRange = days;
+    document.querySelectorAll('.sub-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    updateDashboard();
+  }
+
+  function setFilter(filter, el) {
+    selectedFilter = filter;
+    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    updateDashboard();
+  }
+
+  function updateDashboard() {
+    const t = UI_TEXT[currentLang];
+    document.getElementById('logCountBadge').textContent = t.daysLogged(logs.length);
+    document.getElementById('streakBadge').textContent = `${logs.length}d`;
+    renderDotMatrix();
+
+    if (logs.length === 0) {
+      document.getElementById('diagnosisTag').textContent = t.emptyHeroTag;
+      document.getElementById('heroInsight').textContent = t.emptyHeroDesc;
+      refreshTodayAdvice(false);
+      return;
+    }
+
+    const slice = logs.slice(-selectedRange);
+    const avg = (arr, key) => Math.round(arr.reduce((s, x) => s + x[key], 0) / arr.length);
+
+    const readiness = avg(slice, 'totalReadiness');
+    const phys = avg(slice, 'physicalReadiness');
+    const cog = avg(slice, 'cognitiveClarity');
+    const nerv = avg(slice, 'nervousLoad');
+    const drv = avg(slice, 'forwardDrive');
+
+    const latest = logs[logs.length - 1];
+    const diag = diagnoseState(latest);
+
+    const metricMap = {
+      all: { label: t.heroLabelAll, val: readiness },
+      physical: { label: t.heroLabelPhys, val: phys },
+      cognitive: { label: t.heroLabelCog, val: cog },
+      nervous: { label: t.heroLabelNerv, val: nerv }
+    };
+
+    document.getElementById('heroLabel').textContent = metricMap[selectedFilter].label;
+    document.getElementById('heroScore').innerHTML = `${metricMap[selectedFilter].val} <span>%</span>`;
+    document.getElementById('diagnosisTag').textContent = diag.tag;
+    document.getElementById('heroInsight').textContent = diag.desc;
+
+    refreshTodayAdvice(false);
+
+    document.getElementById('physScoreRing').textContent = `${phys}%`;
+    document.getElementById('physStatus').textContent = phys >= 65 ? t.physGood : t.physLow;
+
+    document.getElementById('nervLoadVal').innerHTML = `${nerv}% <small>Load</small>`;
+    document.getElementById('nervStatus').textContent = nerv >= 60 ? t.nervHigh : t.nervLow;
+
+    const pastLogs = logs.length > 1 ? logs.slice(0, -1) : logs;
+    document.getElementById('cogNow').textContent = `${100 - latest.cognitiveClarity}%`;
+    document.getElementById('cogPast').textContent = `${100 - avg(pastLogs, 'cognitiveClarity')}%`;
+
+    document.getElementById('drvNow').textContent = `${latest.forwardDrive}%`;
+    document.getElementById('drvPast').textContent = `${avg(pastLogs, 'forwardDrive')}%`;
+
+    if (logs.length >= 3) {
+      const highNervDays = logs.filter(l => l.nervousLoad >= 60).length;
+      document.getElementById('patternTitle').textContent = currentLang === 'ar' ? "أكتر حاجة ظاهرة" : "Main Pattern";
+      document.getElementById('patternDesc').textContent = currentLang === 'ar'
+        ? `في ${highNervDays} من أصل ${logs.length} أيام كان في شد أو ضغط عصبي ملحوظ.`
+        : `Noticeable stress or tension appeared on ${highNervDays} of ${logs.length} logged days.`;
+    } else {
+      document.getElementById('patternTitle').textContent = t.patternTitleDefault;
+      document.getElementById('patternDesc').textContent = t.patternDescDefault;
+    }
+  }
+
+  function renderDotMatrix() {
+    const container = document.getElementById('dotMatrixContainer');
+    container.innerHTML = '';
+    const months = currentLang === 'ar' ? ['قبل كده', 'الشهر اللي فات', 'الحالي'] : ['Earlier', 'Last Mo', 'Current'];
+    const totalDots = 84;
+    const recent = logs.slice(-totalDots);
+
+    months.forEach((m, mIdx) => {
+      const block = document.createElement('div');
+      block.className = 'month-block';
+      block.innerHTML = `<div class="month-name">${m}</div>`;
+      const grid = document.createElement('div');
+      grid.className = 'dot-grid';
+
+      for (let i = 0; i < 28; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'dot';
+        const logIdx = (mIdx * 28) + i - (totalDots - recent.length);
+        if (logIdx >= 0 && recent[logIdx]) {
+          const r = recent[logIdx].totalReadiness;
+          if (r >= 80) dot.classList.add('lvl-4');
+          else if (r >= 60) dot.classList.add('lvl-3');
+          else if (r >= 40) dot.classList.add('lvl-2');
+          else dot.classList.add('lvl-1');
+        }
+        grid.appendChild(dot);
+      }
+      block.appendChild(grid);
+      container.appendChild(block);
+    });
+  }
+
+  function renderLogs() {
+    const list = document.getElementById('logsList');
+    if (logs.length === 0) {
+      list.innerHTML = `<div style="font-size:13px; color:var(--text-secondary);">${UI_TEXT[currentLang].emptyLogs}</div>`;
+      return;
+    }
+    list.innerHTML = [...logs].reverse().map(l => {
+      const d = diagnoseState(l);
+      const statsLine = currentLang === 'ar'
+        ? `الجسم: ${l.physicalReadiness}% • الذهن: ${l.cognitiveClarity}% • الضغط: ${l.nervousLoad}%`
+        : `Body: ${l.physicalReadiness}% • Mind: ${l.cognitiveClarity}% • Stress: ${l.nervousLoad}%`;
+      return `
+        <div style="background:#191919; border:1px solid var(--border-subtle); border-radius:16px; padding:14px;">
+          <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-secondary); margin-bottom:6px;">
+            <span>${l.date}</span>
+            <span style="color:#fff; font-weight:700;">${l.totalReadiness}%</span>
+          </div>
+          <div style="font-size:13px; font-weight:600; margin-bottom:4px;">${d.tag}</div>
+          <div style="font-size:11px; color:var(--text-secondary);">${statsLine}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function loadDemoData() {
+    const demo = [];
+    const now = Date.now();
+    for (let i = 13; i >= 0; i--) {
+      const date = new Date(now - i * 86400000).toISOString().split('T')[0];
+      const raw = Array.from({ length: 10 }, () => Math.floor(1 + Math.random() * 5));
+      const physStrain = (raw[0] + raw[1] + raw[2]) / 3;
+      const cogStrain = (raw[3] + raw[4] + raw[5]) / 3;
+      const nervStrain = (raw[6] + raw[7]) / 2;
+      const driveStrain = (raw[8] + raw[9]) / 2;
+
+      const physicalReadiness = Math.round(((5 - physStrain) / 4) * 100);
+      const cognitiveClarity = Math.round(((5 - cogStrain) / 4) * 100);
+      const nervousLoad = Math.round(((nervStrain - 1) / 4) * 100);
+      const forwardDrive = Math.round(((5 - driveStrain) / 4) * 100);
+      const totalReadiness = Math.round(
+        (physicalReadiness * 0.3) +
+        (cognitiveClarity * 0.3) +
+        ((100 - nervousLoad) * 0.2) +
+        (forwardDrive * 0.2)
+      );
+
+      demo.push({
+        date,
+        timestamp: now - i * 86400000,
+        raw,
+        physicalReadiness,
+        cognitiveClarity,
+        nervousLoad,
+        forwardDrive,
+        totalReadiness
+      });
+    }
+    logs = demo;
+    localStorage.setItem('lpr_logs_v4', JSON.stringify(logs));
+    updateDashboard();
+  }
+
+  function clearAllData() {
+    logs = [];
+    localStorage.removeItem('lpr_logs_v4');
+    updateDashboard();
+    renderLogs();
+  }
+
+  applyLanguageUI();
+  loadOrGenerateTodayQuestions();
+  updateDashboard();
+</script>
+</body>
+</html>
